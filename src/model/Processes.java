@@ -24,19 +24,23 @@ import java.util.List;
  *
  * @author dream
  */
-public class process implements Serializable{
+public class Processes implements Serializable{
     public static final long serialVersionUID = 2020;
     private String processName;
     private int processNum;
     private int processMem;
 
-    public process() {
+    public Processes() {
     }
 
-    public process(String processName, int processNum, int processMem) {
+    public Processes(String processName, int processNum, int processMem) {
         this.processName = processName;
         this.processNum = processNum;
         this.processMem = processMem;
+    }
+    
+    public Processes(String processName) {
+        this.processName = processName;
     }
 
     public String getProcessName() {
