@@ -5,14 +5,18 @@ import view.LogInView;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.rmi.server.*;
+import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import model.Device;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -23,9 +27,9 @@ import java.util.logging.Logger;
  *
  * @author dream
  */
-public class ClientServices implements IClientServices, IClientMethods {
+public class ClientServices extends UnicastRemoteObject implements IClientServices, IClientMethods {
 
-    public ClientServices() {
+    public ClientServices() throws RemoteException{
         RunableThread();
     }
 
@@ -41,7 +45,11 @@ public class ClientServices implements IClientServices, IClientMethods {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                new LogInView().setVisible(true);
+                new LogInView().setVisible(false);
+                try {
+                    Device dv = getDevice();
+                } catch (RemoteException ex) {
+                }
                 try {
                     releaseKeys(new Robot());
                 } catch (AWTException ex) {
@@ -163,14 +171,33 @@ public class ClientServices implements IClientServices, IClientMethods {
         }
         return mem;
     }
-    
-    public static void main(String[] args) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                new ClientServices();
-            }
-        }).start();
-    }
 
+    @Override
+    public Device getDevice() throws RemoteException {
+        String file = new File("..\\T-Group-Client\\src\\controller\\GetDevice.vbs").getAbsolutePath();
+        String[] propNames = new String[] { "Name", "UUID"};
+        Device device = null;
+        try {
+            Process p = Runtime.getRuntime().exec("cscript //NoLogo " + file);
+            BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
+ 
+           Map<String, String> map = new HashMap<String, String>();
+           String line;
+           int i = 0;
+           while ((line = input.readLine()) != null) {
+               if (i >= propNames.length) {
+                   break;
+               }
+               String key = propNames[i];
+               map.put(key, line);
+               i++;
+           }
+           input.close();
+           //
+           device = new Device(propNames[0], propNames[1]);
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+        return device;
+    }
 }
