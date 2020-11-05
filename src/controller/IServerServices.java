@@ -5,16 +5,14 @@
  */
 package controller;
 
-import java.util.List;
+import java.rmi.*;
+import model.Accounts;
 import model.Devices;
-import model.Processes;
-
 /**
  *
  * @author dream
  */
-public interface IClientMethods {
-    public List<Processes> formatProcesses(List<String> list);
-    public String[] splitString(String[] str);
-    public int formatMem(String processMem);
+public interface IServerServices extends Remote{
+    public boolean logIn(Accounts accounts) throws RemoteException;
+    public void setStatus(Devices devices) throws RemoteException;
 }

@@ -16,7 +16,7 @@ import java.rmi.server.*;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import model.Device;
+import model.Devices;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -29,8 +29,17 @@ import model.Device;
  */
 public class ClientServices extends UnicastRemoteObject implements IClientServices, IClientMethods {
 
-    public ClientServices() throws RemoteException{
-        RunableThread();
+    public LogInView logInView;
+    public Devices devices;
+    public Thread loginThread;
+    public boolean login = false;
+    public LookupServices lookupServices;
+
+    public ClientServices() throws RemoteException {
+        try {
+            RunableThread();
+        } catch (Exception ex) {
+        }
     }
 
     private void releaseKeys(Robot robot) {
@@ -41,18 +50,43 @@ public class ClientServices extends UnicastRemoteObject implements IClientServic
         robot.keyRelease(9);
     }
 
-    public void RunableThread() {
-        new Thread(new Runnable() {
+    public void RunableThread() throws Exception {
+        loginThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                new LogInView().setVisible(false);
-                try {
-                    Device dv = getDevice();
-                } catch (RemoteException ex) {
-                }
+                logInView = new LogInView();
+                logInView.setVisible(true);
                 try {
                     releaseKeys(new Robot());
                 } catch (AWTException ex) {
+                }
+                while(!login) {
+                    login = logInView.login;
+                    System.out.print("");
+                }
+                if (login) {
+                    logInView.dispose();
+                    devices.setStatus("ONLINE");
+                    try {
+                        lookupServices.iserverservices.setStatus(devices);
+                    } catch (RemoteException ex) {
+                    }
+                }
+            }
+        });
+        loginThread.start();
+        
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                boolean check = false;
+                try {
+                    while (!check) {
+                        Thread.sleep(1000);
+                        check = checkStatus();
+
+                    }
+                } catch (Exception ex) {
                 }
             }
         }).start();
@@ -62,26 +96,50 @@ public class ClientServices extends UnicastRemoteObject implements IClientServic
             public void run() {
                 try {
                     try {
-                        int count = 0;
                         Processes kill1 = new Processes("taskmgr");
                         Processes kill2 = new Processes("explorer");
-                        while (count < 30000) {
+                        boolean login = true;
+
+                        while (login) {
+                            System.out.println(loginThread.isAlive()+ " Thread");
+                            if (!loginThread.isAlive()) {
+                                login = false;
+                            }
                             killProcess(kill1);
                             killProcess(kill2);
-                            count += 1000;
                             Thread.sleep(1000);
+                            System.out.println("Killing...");
                         }
                         Runtime.getRuntime().exec("explorer.exe");
                     } catch (IOException ex) {
                     }
-                    System.exit(0);
                 } catch (InterruptedException ex) {
                 }
             }
         }).start();
     }
 
-    
+    public boolean checkStatus() throws Exception {
+        System.out.println("Start checking server....");
+        lookupServices = new LookupServices("localhost", 2021);
+        boolean check = false;
+        try {
+            if (lookupServices.connect()) {
+                logInView.logInBt.setEnabled(true);
+                devices = getDevice();
+                devices.setIp("localhost");
+                devices.setStatus("AVAILABLE");
+                lookupServices.setStatus(devices);
+                check = true;
+            } else {
+                logInView.logInBt.setEnabled(false);
+            }
+        } catch (Exception ex) {
+        }
+        System.out.println("Checking server successfully!!!");
+        return check;
+    }
+
     @Override
     public boolean killProcess(Processes process) {
         try {
@@ -173,28 +231,28 @@ public class ClientServices extends UnicastRemoteObject implements IClientServic
     }
 
     @Override
-    public Device getDevice() throws RemoteException {
+    public Devices getDevice() throws RemoteException {
         String file = new File("..\\T-Group-Client\\src\\controller\\GetDevice.vbs").getAbsolutePath();
-        String[] propNames = new String[] { "Name", "UUID"};
-        Device device = null;
+        String[] propNames = new String[]{"Name", "UUID"};
+        Devices device = null;
         try {
             Process p = Runtime.getRuntime().exec("cscript //NoLogo " + file);
             BufferedReader input = new BufferedReader(new InputStreamReader(p.getInputStream()));
- 
-           Map<String, String> map = new HashMap<String, String>();
-           String line;
-           int i = 0;
-           while ((line = input.readLine()) != null) {
-               if (i >= propNames.length) {
-                   break;
-               }
-               String key = propNames[i];
-               map.put(key, line);
-               i++;
-           }
-           input.close();
-           //
-           device = new Device(propNames[0], propNames[1]);
+
+            Map<String, String> map = new HashMap<String, String>();
+            String line;
+            int i = 0;
+            while ((line = input.readLine()) != null) {
+                if (i >= propNames.length) {
+                    break;
+                }
+                String key = propNames[i];
+                map.put(key, line);
+                i++;
+            }
+            input.close();
+            //
+            device = new Devices(map.get(propNames[0]), map.get(propNames[1]));
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }

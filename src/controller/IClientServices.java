@@ -7,7 +7,7 @@ package controller;
 
 import java.util.List;
 import java.rmi.*;
-import model.Device;
+import model.Devices;
 import model.Processes;
 /**
  *
@@ -16,5 +16,7 @@ import model.Processes;
 public interface IClientServices extends Remote{
     public boolean killProcess(Processes process) throws RemoteException;
     public List<Processes> update() throws RemoteException;
-    public Device getDevice() throws RemoteException;
+    public Devices getDevice() throws RemoteException;
+
+    
 }

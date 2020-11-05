@@ -5,7 +5,10 @@
  */
 package view;
 
-import java.awt.Toolkit;
+import controller.LookupServices;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import model.Accounts;
 
 /**
  *
@@ -16,8 +19,11 @@ public class LogInView extends javax.swing.JFrame {
     /**
      * Creates new form LogInView
      */
+    public boolean login = false;
+
     public LogInView() {
         initComponents();
+
     }
 
     /**
@@ -36,14 +42,14 @@ public class LogInView extends javax.swing.JFrame {
         jPasswordField1 = new javax.swing.JPasswordField();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        logInBt = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setAlwaysOnTop(true);
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setLocation(new java.awt.Point(0, 0));
         setUndecorated(true);
-        setPreferredSize(new java.awt.Dimension(1366, 768));
+        setPreferredSize(new java.awt.Dimension(700, 500));
         setResizable(false);
         getContentPane().setLayout(new java.awt.FlowLayout());
 
@@ -58,10 +64,10 @@ public class LogInView extends javax.swing.JFrame {
         jLabel4.setForeground(new java.awt.Color(255, 51, 51));
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
-        jButton1.setText("Log In");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        logInBt.setText("Log In");
+        logInBt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                logInBtActionPerformed(evt);
             }
         });
 
@@ -77,7 +83,7 @@ public class LogInView extends javax.swing.JFrame {
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 215, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addComponent(jButton1)
+                                .addComponent(logInBt)
                                 .addGap(90, 90, 90))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -112,7 +118,7 @@ public class LogInView extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jButton1)
+                .addComponent(logInBt)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -121,17 +127,33 @@ public class LogInView extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void logInBtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_logInBtActionPerformed
+        LookupServices lookupServices = new LookupServices("localhost", 2021);
+        try {
+            if (lookupServices.connect()) {
+                if (!lookupServices.iserverservices.logIn(new Accounts(jTextField1.getText(), jPasswordField1.getText()))) {
+                    JOptionPane optionPane = new JOptionPane("Wrong username or password!!!");
+                    JDialog dialog = optionPane.createDialog("Warning!!!");
+                    dialog.setAlwaysOnTop(true);
+                    dialog.setVisible(true);
+                } else {
+                    login = true;
+                    JOptionPane optionPane = new JOptionPane("Login successfully!!!");
+                    JDialog dialog = optionPane.createDialog("Warning!!!");
+                    dialog.setAlwaysOnTop(true);
+                    dialog.setVisible(true);
+                }
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+    }//GEN-LAST:event_logInBtActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -139,5 +161,6 @@ public class LogInView extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JTextField jTextField1;
+    public javax.swing.JButton logInBt;
     // End of variables declaration//GEN-END:variables
 }

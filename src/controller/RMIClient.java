@@ -7,12 +7,14 @@ package controller;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 /**
  *
  * @author dream
  */
 public class RMIClient {
-    private void startClient() {
+    private void startClient() throws Exception {
         try {
             Registry registry = LocateRegistry.createRegistry(2020);
             registry.rebind("IClientServices", new ClientServices());
@@ -27,7 +29,10 @@ public class RMIClient {
             @Override
             public void run() {
                 RMIClient client = new RMIClient();
-                client.startClient();
+                try {
+                    client.startClient();
+                } catch (Exception ex) {
+                }
             }
         }).start();
     }

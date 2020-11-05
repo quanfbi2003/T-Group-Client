@@ -3,10 +3,7 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/My_Works/Java/T-Group-Client/src/model/process.java</file>
-            <file>file:/D:/My_Works/Java/T-Group-Client/src/controller/TGroupClient.java</file>
-            <file>file:/D:/My_Works/Java/T-Group-Client/src/model/ClientServices.java</file>
-            <file>file:/D:/My_Works/Java/T-Group-Client/src/view/LogInView.java</file>
+            <file>file:/D:/My_Works/Java/T-Group-Client/src/controller/LookupServices.java</file>
         </group>
     </open-files>
 </project-private>
