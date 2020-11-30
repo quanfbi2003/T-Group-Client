@@ -11,24 +11,19 @@ import java.io.Serializable;
  *
  * @author dream
  */
-public class Devices implements Serializable{
+public class Devices implements Serializable {
+
     public static final long serialVersionUID = 2020;
     private String deviceName;
     private String deviceUUID;
     private String ip;
-    private String status = "OFFLINE";
-    private String username;
-    private String note = "NULL";
+    private String status;
+    private long startTime;
 
     public Devices() {
+        this.status = Definitions.OFFLINE;
     }
 
-    public Devices(String deviceName, String deviceUUID, String ip) {
-        this.deviceName = deviceName;
-        this.deviceUUID = deviceUUID;
-        this.ip = ip;
-    }
-    
     public Devices(String deviceName, String deviceUUID) {
         this.deviceName = deviceName;
         this.deviceUUID = deviceUUID;
@@ -58,22 +53,6 @@ public class Devices implements Serializable{
         this.status = status;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
     public String getIp() {
         return ip;
     }
@@ -82,8 +61,12 @@ public class Devices implements Serializable{
         this.ip = ip;
     }
     
-    public Object[] toObject () {
-        return new Object[]{deviceName, status, username, note};
+    public long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(long startTime) {
+        this.startTime = startTime;
     }
     
 }

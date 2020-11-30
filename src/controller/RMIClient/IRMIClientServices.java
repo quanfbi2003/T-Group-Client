@@ -3,20 +3,23 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package controller;
+package controller.RMIClient;
 
 import java.util.List;
 import java.rmi.*;
 import model.Devices;
 import model.Processes;
+
 /**
  *
  * @author dream
  */
-public interface IClientServices extends Remote{
+public interface IRMIClientServices extends Remote {
+
     public boolean killProcess(Processes process) throws RemoteException;
+
     public List<Processes> update() throws RemoteException;
+
     public Devices getDevice() throws RemoteException;
 
-    
 }

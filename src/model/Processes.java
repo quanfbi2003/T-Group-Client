@@ -72,7 +72,7 @@ public class Processes implements Serializable{
         this.processNum++;
     }
     
-    public Object toObject() {
+    public Object[] toObject() {
         return new Object[] {processName,processNum,String.format("%.1f",processMem/1024.0)+" MB"};
     }
     

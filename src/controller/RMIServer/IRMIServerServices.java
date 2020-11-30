@@ -3,16 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package controller;
+package controller.RMIServer;
 
 import java.rmi.*;
-import model.Accounts;
 import model.Devices;
 /**
  *
  * @author dream
  */
-public interface IServerServices extends Remote{
-    public boolean logIn(Accounts accounts) throws RemoteException;
+public interface IRMIServerServices extends Remote{
     public void setStatus(Devices devices) throws RemoteException;
 }
