@@ -7,9 +7,8 @@ package controller;
 
 import controller.RMIServer.LookupServices;
 import controller.RMIClient.RMIClient;
-import java.util.Calendar;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import model.Definitions;
 import model.Devices;
 
@@ -33,9 +32,10 @@ public class StartClient {
             @Override
             public void run() {
                 devices = new Devices();
-                Calendar calTime = Calendar.getInstance();
-                long startTime = calTime.getTimeInMillis();
-                devices.setStartTime(startTime);
+                
+                Date startTime = new Date();
+                SimpleDateFormat date_format = new SimpleDateFormat("hh:mm:ss");
+                devices.setStartTime(date_format.format(startTime));
                 devices.setStatus(Definitions.ONLINE);
             }
         });

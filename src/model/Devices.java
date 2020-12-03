@@ -15,18 +15,17 @@ public class Devices implements Serializable {
 
     public static final long serialVersionUID = 2020;
     private String deviceName;
-    private String deviceUUID;
     private String ip;
     private String status;
-    private long startTime;
+    private String startTime;
 
     public Devices() {
         this.status = Definitions.OFFLINE;
+        this.startTime = "";
     }
 
-    public Devices(String deviceName, String deviceUUID) {
+    public Devices(String deviceName) {
         this.deviceName = deviceName;
-        this.deviceUUID = deviceUUID;
     }
 
     public String getDeviceName() {
@@ -35,14 +34,6 @@ public class Devices implements Serializable {
 
     public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;
-    }
-
-    public String getDeviceUUID() {
-        return deviceUUID;
-    }
-
-    public void setDeviceUUID(String deviceUUID) {
-        this.deviceUUID = deviceUUID;
     }
 
     public String getStatus() {
@@ -60,13 +51,14 @@ public class Devices implements Serializable {
     public void setIp(String ip) {
         this.ip = ip;
     }
-    
-    public long getStartTime() {
+
+    public String getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(long startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
+    
     
 }
