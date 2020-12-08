@@ -12,18 +12,24 @@ import model.Definitions;
  *
  * @author dream
  */
-public class RMIClient {
+public class StartClient {
     
-    public static RMIClientServices rmiServices;
-    
-    public void startServer() {
+    public StartClient() {
         try {
             Registry registry = LocateRegistry.createRegistry(Definitions.CLIENT_PORT);
-            rmiServices = new RMIClientServices();
-            registry.rebind(Definitions.REGISTERED_NAME, rmiServices);
+            registry.rebind(Definitions.REGISTERED_NAME, new ClientServices());
         } catch (RemoteException ex) {
             System.out.println(ex.getMessage());
         }
         System.out.println("RMIClient is online!");
+    }
+    
+    public static void main(String[] args) {
+        new Thread(new Runnable() { // RMI Thread
+            @Override
+            public void run() {
+                new StartClient();
+            }
+        }).start();
     }
 }

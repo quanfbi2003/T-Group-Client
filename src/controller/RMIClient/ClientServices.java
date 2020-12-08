@@ -1,18 +1,13 @@
 package controller.RMIClient;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import model.Processes;
+import controller.remote.StartRemote;
+import java.io.*;
 import java.util.List;
 import java.rmi.server.*;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import model.Devices;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import model.*;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -23,17 +18,55 @@ import model.Devices;
  *
  * @author dream
  */
-public class RMIClientServices extends UnicastRemoteObject implements IRMIClientServices {
+public class ClientServices extends UnicastRemoteObject implements IRMIClientServices {
 
-    public Devices devices;
+//    private static LookupServices lookupServies;
+    private Devices devices;
 
-    public RMIClientServices() throws RemoteException {
+    public ClientServices() throws RemoteException {
+         runnableThread();
+    }
+    
+    public void runnableThread() {
+
+        Thread runThread = new Thread(new Runnable() { // Constructor Thread
+            @Override
+            public void run() {
+                devices = new Devices();
+
+                Date startTime = new Date();
+                SimpleDateFormat date_format = new SimpleDateFormat("hh:mm:ss");
+                devices.setStartTime(date_format.format(startTime));
+                devices.setStatus(Definitions.ONLINE);
+            }
+        });
+        runThread.start();
+
+        Thread blackListThread = new Thread(new Runnable() { // BlackList Thread
+            @Override
+            public void run() {
+                while (true) {
+                    String[] blprocess = devices.getBlackList().split(",");
+                    for (String i : blprocess) {
+                        try {
+                            killProcess(new Processes(i.replaceAll(".exe", "").trim()));
+                        } catch (RemoteException ex) {
+                        }
+                    }
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ex) {
+                    }
+                }
+            }
+        });
+        blackListThread.start();
     }
 
     @Override
-    public boolean killProcess(Processes process) throws RemoteException {
+    public boolean killProcess(Processes process) throws RemoteException { //Kill the process from server
         try {
-            Runtime.getRuntime().exec("taskkill /F /IM " + process.getProcessName() + ".exe"); //shutdown -t 0
+            Runtime.getRuntime().exec("taskkill /F /IM " + process.getProcessName() + ".exe");
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             return false;
@@ -42,7 +75,7 @@ public class RMIClientServices extends UnicastRemoteObject implements IRMIClient
     }
 
     @Override
-    public List<Processes> update() throws RemoteException {
+    public List<Processes> update() throws RemoteException { //Send and update list of processes to server
         List<String> list = new ArrayList<>();
         try {
             String line;
@@ -60,11 +93,12 @@ public class RMIClientServices extends UnicastRemoteObject implements IRMIClient
     }
 
     @Override
-    public Devices getDevice() throws RemoteException {
-        return devices; //To change body of generated methods, choose Tools | Templates.
+    public Devices getDevice(Devices devices) throws RemoteException { // Send device infomation (stauts and start time) to server
+        this.devices.setBlackList(devices.getBlackList());
+        return this.devices; 
     }
 
-    public List<Processes> formatProcesses(List<String> list) {
+    public List<Processes> formatProcesses(List<String> list) { //Format the processes and create list
         List<Processes> lp = new ArrayList<>();
 
         try {
@@ -93,7 +127,7 @@ public class RMIClientServices extends UnicastRemoteObject implements IRMIClient
         return lp;
     }
 
-    public String[] splitString(String[] str) {
+    public String[] splitString(String[] str) { //Format name of the processes
         String temp[] = new String[2];
         temp[0] = "";
         for (int i = 0; i < str.length; i++) {
@@ -108,7 +142,7 @@ public class RMIClientServices extends UnicastRemoteObject implements IRMIClient
         return temp;
     }
 
-    public int formatMem(String processMem) {
+    public int formatMem(String processMem) { //Format memory of the processes
         int mem = 0;
         for (int i = 0; i < processMem.length(); i++) {
             if (processMem.charAt(i) != ',') {
@@ -123,7 +157,7 @@ public class RMIClientServices extends UnicastRemoteObject implements IRMIClient
     }
 
     @Override
-    public void shutdown() throws RemoteException {
+    public void shutdown() throws RemoteException { // Shutdown feature
         try {
             Runtime.getRuntime().exec("shutdown -s -t 0");
         } catch (IOException ex) {
@@ -131,11 +165,16 @@ public class RMIClientServices extends UnicastRemoteObject implements IRMIClient
     }
 
     @Override
-    public void restart() throws RemoteException {
+    public void restart() throws RemoteException { // Restart feature
         try {
-            Runtime.getRuntime().exec("shutdown -r");
+            Runtime.getRuntime().exec("shutdown -g -t 0");
         } catch (IOException ex) {
         }
     }
 
+    @Override
+    public void remote() throws RemoteException { // Remote feature
+        new StartRemote().initialize(Definitions.SERVER_IP, Definitions.REMOTE_PORT);
+        System.out.println("Remoting....");
+    }
 }

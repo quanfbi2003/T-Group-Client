@@ -20,10 +20,12 @@ public interface IRMIClientServices extends Remote {
 
     public List<Processes> update() throws RemoteException;
 
-    public Devices getDevice() throws RemoteException;
+    public Devices getDevice(Devices devices) throws RemoteException;
     
     public void shutdown() throws RemoteException;
     
     public void  restart() throws RemoteException;
+    
+    public void remote() throws RemoteException;
 
 }

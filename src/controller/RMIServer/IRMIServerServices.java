@@ -12,5 +12,5 @@ import model.Devices;
  * @author dream
  */
 public interface IRMIServerServices extends Remote{
-    public void setStatus(Devices devices) throws RemoteException;
+    public Devices getDevices(Devices devices) throws RemoteException;
 }

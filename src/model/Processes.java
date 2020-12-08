@@ -11,8 +11,6 @@ package model;
  */
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /*
  * To change this license header, choose License Headers in Project Properties.

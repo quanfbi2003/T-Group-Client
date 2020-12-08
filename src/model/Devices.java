@@ -18,10 +18,13 @@ public class Devices implements Serializable {
     private String ip;
     private String status;
     private String startTime;
+    private String blackList;
 
+    
     public Devices() {
         this.status = Definitions.OFFLINE;
         this.startTime = "";
+        this.blackList = "";
     }
 
     public Devices(String deviceName) {
@@ -60,5 +63,12 @@ public class Devices implements Serializable {
         this.startTime = startTime;
     }
     
-    
+    public String getBlackList() {
+        return blackList;
+    }
+
+    public void setBlackList(String blackList) {
+        this.blackList = blackList;
+    }
+
 }
