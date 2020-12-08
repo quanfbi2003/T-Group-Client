@@ -1,6 +1,6 @@
 package controller.Client;
 
-import controller.remote.StartRemote;
+import controller.remote.InitConnection;
 import java.io.*;
 import java.util.List;
 import java.rmi.server.*;
@@ -24,9 +24,10 @@ public class ClientServices extends UnicastRemoteObject implements IRMIClientSer
     private Devices devices;
 
     public ClientServices() throws RemoteException {
-         runnableThread();
+        runnableThread();
+        remote();
     }
-    
+
     public void runnableThread() {
 
         Thread runThread = new Thread(new Runnable() { // Constructor Thread
@@ -95,7 +96,7 @@ public class ClientServices extends UnicastRemoteObject implements IRMIClientSer
     @Override
     public Devices getDevice(Devices devices) throws RemoteException { // Send device infomation (stauts and start time) to server
         this.devices.setBlackList(devices.getBlackList());
-        return this.devices; 
+        return this.devices;
     }
 
     public List<Processes> formatProcesses(List<String> list) { //Format the processes and create list
@@ -172,9 +173,15 @@ public class ClientServices extends UnicastRemoteObject implements IRMIClientSer
         }
     }
 
-    @Override
     public void remote() throws RemoteException { // Remote feature
-        new StartRemote().initialize(Definitions.SERVER_IP, Definitions.REMOTE_PORT);
         System.out.println("Remoting....");
+        Thread remoteThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                new InitConnection(Definitions.REMOTE_PORT);
+            }
+        });
+        remoteThread.start();
+
     }
 }

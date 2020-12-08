@@ -25,7 +25,4 @@ public interface IRMIClientServices extends Remote {
     public void shutdown() throws RemoteException;
     
     public void  restart() throws RemoteException;
-    
-    public void remote() throws RemoteException;
-
 }
