@@ -1,6 +1,6 @@
 package controller.Client;
 
-import controller.remote.StartRemote;
+import controller.remote.InitConnection;
 import java.io.*;
 import java.util.List;
 import java.rmi.server.*;
@@ -25,6 +25,7 @@ public class ClientServices extends UnicastRemoteObject implements IRMIClientSer
 
     public ClientServices() throws RemoteException {
          runnableThread();
+         remote();
     }
     
     public void runnableThread() {
@@ -172,9 +173,15 @@ public class ClientServices extends UnicastRemoteObject implements IRMIClientSer
         }
     }
 
-    @Override
     public void remote() throws RemoteException { // Remote feature
-        new StartRemote().initialize(Definitions.SERVER_IP, Definitions.REMOTE_PORT);
+        Thread remoteThread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new InitConnection(Definitions.REMOTE_PORT);
+                    }
+                });
+                remoteThread.start();
+        
         System.out.println("Remoting....");
     }
 }
