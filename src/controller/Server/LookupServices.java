@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package controller.RMIServer;
+package controller.Server;
 
-import controller.RMIServer.IRMIServerServices;
+import controller.Server.IRMIServerServices;
 import java.rmi.registry.*;
 import model.Definitions;
 

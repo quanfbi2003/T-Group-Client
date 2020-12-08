@@ -1,4 +1,4 @@
-package controller.RMIClient;
+package controller.Client;
 
 import controller.remote.StartRemote;
 import java.io.*;
